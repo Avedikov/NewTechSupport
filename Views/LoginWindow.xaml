@@ -1,0 +1,26 @@
+﻿<Window x:Class="TechSupport.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="LoginWindow" Height="300" Width="400"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <StackPanel>
+            <TextBlock Text="Логин:" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtUsername"  Margin="0,0,0,15"/>
+
+            <TextBlock Text="Пароль:" Margin="0,0,0,5"/>
+            <PasswordBox x:Name="txtPassword" Margin="0,0,0,20"/>
+
+            <Button Name="LoginButton" Content="Войти" Click="LoginButton_Click" Padding="10,5"/>
+
+            <TextBlock Text="Нет аккаунта?" Margin="0,10,0,0"/>
+            <Button Name="RegisterButton" Content="Зарегистрироваться" 
+                     Click="RegisterButton_Click"
+                     Padding="10,5"
+                     Margin="0,5,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

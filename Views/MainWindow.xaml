@@ -1,0 +1,45 @@
+﻿<Window x:Class="TechSupport.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="clr-namespace:TechSupport.ViewModels" xmlns:converters="clr-namespace:TechSupport.Converters"
+        Title="MainWindow" Height="600" Width="1100">
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
+    
+    <Grid>
+        
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Левая панель навигации -->
+        <Border Grid.Column="0" Background="#2C3E50">
+            <StackPanel>
+                <TextBlock Text="Техподдержка" Foreground="White" 
+                          FontSize="18" Margin="10" FontWeight="Bold"/>
+
+                <Button Content="Новая заявка" Command="{Binding NavigateToNewTicketCommand}"
+                        Style="{StaticResource NavButtonStyle}"/>
+
+                <Button Content="Мои заявки" Command="{Binding NavigateToTicketsCommand}"
+                        Style="{StaticResource NavButtonStyle}"/>
+
+                <Button Content="База знаний" Command="{Binding NavigateToKnowledgeBaseCommand}"
+                        Style="{StaticResource NavButtonStyle}"/>
+
+                <Button Content="Администрирование" Command="{Binding NavigateToAdminCommand}"
+                        Style="{StaticResource NavButtonStyle}"
+                        Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                <Button Content="Выйти" Command="{Binding LogoutCommand}"
+                        Style="{StaticResource NavButtonStyle}" Margin="0,20,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Основная область -->
+        <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden"
+               Content="{Binding CurrentPage}"/>
+    </Grid>
+</Window>
