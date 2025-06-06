@@ -1,5 +1,7 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using TechSupport.ViewModels;
+
 
 namespace TechSupport.Views
 {
@@ -8,17 +10,9 @@ namespace TechSupport.Views
     /// </summary>
     public partial class RegisterWindow : Window
     {
-        private readonly Services.AuthService _authService;
-        public RegisterWindow(RegisterViewModel viewModel)
+        public RegisterWindow(RegisterViewModel viewModel, PasswordBox passwordBox)
         {
-            InitializeComponent();
             
-            DataContext = viewModel;
-        }
-
-        private void InitializeComponent()
-        {
-            throw new NotImplementedException();
         }
     }
 }

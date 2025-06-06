@@ -81,13 +81,16 @@ namespace TechSupport.Views
         }
 
 
-        private void RegisterButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Логика обработки нажатия кнопки регистрации
-            var viewModel = new RegisterViewModel(_authService); // Создаем ViewModel
-            var registerWindow = new RegisterWindow(viewModel); // Передаем в конструктор
-            registerWindow.Show();
-        }
+        //private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // Логика обработки нажатия кнопки регистрации
+        //    var viewModel = new RegisterViewModel(_authService); // Создаем ViewModel
+        //    var registerWindow = new RegisterWindow(viewModel,
+
+        //    // Привязка PasswordBox к ViewModel
+        //    passwordBox: PasswordBox); // Передаем в конструктор
+        //    registerWindow.Show();
+        //}
         //public LoginWindow() : this(new AuthService()) 
         //{ 
 

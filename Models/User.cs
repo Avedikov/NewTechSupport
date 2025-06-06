@@ -35,13 +35,13 @@ namespace TechSupport.Models
 
         [Required]
         [MaxLength(20)]
-        public string Role { get; set; } = "User"; // User, TechSupport, Admin
+        public string Role { get; set; } = "User";
 
         [MaxLength(100)]
-        public string Position { get; set; }
+        public string Position { get; set; } = "Не указана";
 
         [MaxLength(100)]
-        public string Department { get; set; }
+        public string Department { get; set; } = "DefaultDepartment";
 
         public bool IsActive { get; set; } = true;
 

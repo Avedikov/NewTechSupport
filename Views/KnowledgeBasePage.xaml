@@ -8,46 +8,6 @@
   
       Title="База знаний">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Панель управления -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
-            <ComboBox ItemsSource="{Binding Statuses}" 
-                      SelectedItem="{Binding SelectedStatus}"
-                      Width="120" Margin="5"
-                      DisplayMemberPath="."/>
-
-            <ComboBox ItemsSource="{Binding TechSupportUsers}" 
-                      SelectedItem="{Binding SelectedUser}"
-                      Width="200" Margin="5"
-                      DisplayMemberPath="Name"/>
-
-            <Button Content="Изменить статус" 
-                    Command="{Binding ChangeStatusCommand}"
-                    Margin="5" Width="120"/>
-
-            <Button Content="Назначить ответственного" 
-                    Command="{Binding AssignUserCommand}"
-                    Margin="5" Width="180"/>
-        </StackPanel>
-
-        <!-- Список статей -->
-        <ListView Grid.Row="1" ItemsSource="{Binding Articles}" 
-                  SelectedItem="{Binding SelectedArticle}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="50"/>
-                    <GridViewColumn Header="Название" DisplayMemberBinding="{Binding Title}" Width="200"/>
-                    <GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Status}" Width="100"/>
-                    <GridViewColumn Header="Ответственный" DisplayMemberBinding="{Binding Author.Name}" Width="150"/>
-                    <GridViewColumn Header="Дата обновления" 
-                                  DisplayMemberBinding="{Binding LastUpdated, StringFormat=dd.MM.yyyy HH:mm}" 
-                                  Width="150"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        
     </Grid>
 </Page>

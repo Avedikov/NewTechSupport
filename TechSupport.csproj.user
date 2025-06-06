@@ -7,7 +7,15 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\EditTicketWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\AdminPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\EditTicketWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\KnowledgeBasePage.xaml">

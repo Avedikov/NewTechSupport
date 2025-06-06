@@ -4,84 +4,58 @@ using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using TechSupport.Models;
 using TechSupport.Context;
+using TechSupport.Services;
+using TechSupport.Views;
 
 namespace TechSupport.ViewModels
 {
     public class RegisterViewModel : BaseViewModel
     {
-        private readonly Services.AuthService _authService;
-        private string _username;
-        private string _password;
-        private string _confirmPassword;
-        private readonly AppDbContext _context;
+        private readonly AuthService _authService;
 
-        public string Username
-        {
-            get => _username;
-            set => SetProperty(ref _username, value);
-        }
-
-        public string Password
-        {
-            get => _password;
-            set => SetProperty(ref _password, value);
-        }
-
-        public string ConfirmPassword
-        {
-            get => _confirmPassword;
-            set => SetProperty(ref _confirmPassword, value);
-        }
+        public string Username { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
 
         public ICommand RegisterCommand { get; }
-        public ICommand CancelCommand { get; }
 
-        
-
-        public RegisterViewModel(Services.AuthService authService)
+        public RegisterViewModel(AuthService authService)
         {
             _authService = authService;
-
-            // Используем non-generic версию RelayCommand
             RegisterCommand = new RelayCommand(Register, CanRegister);
-            CancelCommand = new RelayCommand(Cancel);
         }
 
         private bool CanRegister()
         {
             return !string.IsNullOrWhiteSpace(Username) &&
                    !string.IsNullOrWhiteSpace(Password) &&
-                   Password == ConfirmPassword;
+                   Password == ConfirmPassword &&
+                   Password.Length >= 6;
         }
 
-        public void Register(string username, string password)
+        private void Register()
         {
-            
-            
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-
-            var user = new User
+            try
             {
-                Username = username,
-                PasswordHash = passwordHash,
-                
-            };
-
-            _context.Users.Add(user);
-            _context.SaveChanges();
-        }
-
-        private void Cancel()
-        {
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window.DataContext == this)
-                {
-                    window.DialogResult = false;
-                    window.Close();
-                    break;
-                }
+                _authService.Register(Username, Password, Name, Email);
+                MessageBox.Show("Регистрация успешна!");
+                CloseWindow();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка регистрации: {ex.Message}");
+            }
+        }
+
+        private void CloseWindow()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (Window window in Application.Current.Windows)
+                    if (window is RegisterWindow) window.Close();
+            });
         }
     }
 }

@@ -30,13 +30,11 @@ namespace TechSupport.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
+                    b.Property<int?>("AssignedUserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -48,18 +46,24 @@ namespace TechSupport.Migrations
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("SourceTicketId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AssignedUserId");
+
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("SourceTicketId");
 
                     b.ToTable("KnowledgeArticles");
                 });
@@ -77,6 +81,9 @@ namespace TechSupport.Migrations
 
                     b.Property<string>("AttachedFilePath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Category")
                         .HasMaxLength(50)
@@ -114,9 +121,16 @@ namespace TechSupport.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedUserId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tickets");
                 });
@@ -145,8 +159,9 @@ namespace TechSupport.Migrations
                     b.Property<int?>("ChangedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("KnowledgeArticleId")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NewValue")
                         .HasColumnType("nvarchar(max)");
@@ -160,8 +175,6 @@ namespace TechSupport.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChangedByUserId");
-
-                    b.HasIndex("KnowledgeArticleId");
 
                     b.HasIndex("TicketId");
 
@@ -233,12 +246,12 @@ namespace TechSupport.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 5, 28, 7, 29, 12, 567, DateTimeKind.Utc).AddTicks(6689),
+                            CreatedAt = new DateTime(2025, 6, 5, 18, 54, 40, 736, DateTimeKind.Utc).AddTicks(4002),
                             Department = "IT",
                             Email = "admin@example.com",
                             IsActive = true,
                             Name = "Администратор",
-                            PasswordHash = "$2a$11$xP1SLhgHcYLryInZ6bZ1hOhT1aloLbUsc1iGR0qk3gHJECatHhMvq",
+                            PasswordHash = "$2a$11$oPiHDmDGJkqg93GwavsPAOqgBGL6K1PxSs.az/FN7kXAvr8rnQ3wm",
                             Position = "Главный администратор",
                             Role = "Admin",
                             Username = "admin"
@@ -246,12 +259,12 @@ namespace TechSupport.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 5, 28, 7, 29, 12, 749, DateTimeKind.Utc).AddTicks(4441),
+                            CreatedAt = new DateTime(2025, 6, 5, 18, 54, 40, 902, DateTimeKind.Utc).AddTicks(9090),
                             Department = "Поддержка",
                             Email = "tech1@example.com",
                             IsActive = true,
                             Name = "Техник Иванов",
-                            PasswordHash = "$2a$11$1m6RtXnuyesLJPi0.1hWtuMUozRahQQBwlOmh6y04Tp2262/EsII2",
+                            PasswordHash = "$2a$11$l/NLvrd9cDzfYbSy6.vHj.Krowr/qiHwZYbwFaqMoky33jpy.2ADi",
                             Position = "Технический специалист",
                             Role = "TechSupport",
                             Username = "tech1"
@@ -260,21 +273,47 @@ namespace TechSupport.Migrations
 
             modelBuilder.Entity("TechSupport.Models.KnowledgeArticle", b =>
                 {
+                    b.HasOne("TechSupport.Models.User", "AssignedUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("TechSupport.Models.User", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("TechSupport.Models.Ticket", "SourceTicket")
+                        .WithMany()
+                        .HasForeignKey("SourceTicketId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("AssignedUser");
 
                     b.Navigation("Author");
+
+                    b.Navigation("SourceTicket");
                 });
 
             modelBuilder.Entity("TechSupport.Models.Ticket", b =>
                 {
                     b.HasOne("TechSupport.Models.User", "AssignedUser")
-                        .WithMany("AssignedTickets")
+                        .WithMany()
                         .HasForeignKey("AssignedUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("TechSupport.Models.User", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("TechSupport.Models.User", null)
+                        .WithMany("AssignedTickets")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("AssignedUser");
+
+                    b.Navigation("Author");
                 });
 
             modelBuilder.Entity("TechSupport.Models.TicketHistory", b =>
@@ -284,12 +323,6 @@ namespace TechSupport.Migrations
                         .HasForeignKey("ChangedByUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("TechSupport.Models.KnowledgeArticle", "KnowledgeArticle")
-                        .WithMany()
-                        .HasForeignKey("KnowledgeArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TechSupport.Models.Ticket", "Ticket")
                         .WithMany("History")
                         .HasForeignKey("TicketId")
@@ -297,8 +330,6 @@ namespace TechSupport.Migrations
                         .IsRequired();
 
                     b.Navigation("ChangedByUser");
-
-                    b.Navigation("KnowledgeArticle");
 
                     b.Navigation("Ticket");
                 });

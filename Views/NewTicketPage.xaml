@@ -3,10 +3,11 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
       xmlns:viewModels="clr-namespace:TechSupport.ViewModels" xmlns:viewModels1="clr-namespace:TechSupport.ViewModels" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       Title="Новая заявка" Background="White" Height="370">
-    
+
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -32,13 +33,22 @@
         <TextBox Grid.Row="5" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" 
                  Margin="0,0,0,10"/>
 
+        <!-- Ответственный -->
+        <TextBlock Grid.Row="6" Text="Ответственный:" Margin="0,0,0,5"/>
+        <ComboBox Grid.Row="7" 
+                  ItemsSource="{Binding TechSupportUsers}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Id"
+                  SelectedValue="{Binding AssignedUserId}"
+                  Margin="0,0,0,10"/>
+
         <!-- Description -->
-        <TextBlock Grid.Row="6" Text="Описание:" Margin="0,0,0,5"/>
-        <TextBox Grid.Row="6" Text="{Binding Description}" AcceptsReturn="True" 
+        <TextBlock Grid.Row="8" Text="Описание:" Margin="0,0,0,5"/>
+        <TextBox Grid.Row="9" Text="{Binding Description}" AcceptsReturn="True" 
                  Height="100" Margin="0,0,0,10"/>
 
         <!-- Buttons -->
-        <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="10" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Прикрепить файл" Command="{Binding AttachFileCommand}" 
                     Margin="0,0,10,0" Padding="10,5" Height="46"/>
             <Button Content="Создать заявку" Command="{Binding CreateTicketCommand}" 

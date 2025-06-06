@@ -1,44 +1,19 @@
 ﻿using TechSupport.Context;
 using TechSupport.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Org.BouncyCastle.Crypto.Generators;
 
 namespace TechSupport.Services
 {
     public class AuthService
     {
         private readonly AppDbContext _context;
-
-
         private User _currentUser;
-        public bool IsAuthenticated => CurrentUser != null;
-        public bool IsAdmin => CurrentUser?.Role == "Admin";
-        public bool IsTechSupport => IsAuthenticated && CurrentUser.Role == "TechSupport";
 
         public event Action AuthenticationChanged;
-
-
 
         public AuthService(AppDbContext context)
         {
             _context = context;
-        }
-
-        public bool Login(string username, string password)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
-            if (user == null) return false;
-
-            return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash); // Теперь хэш корректен
-
-            AuthenticationChanged?.Invoke();
         }
 
         public User CurrentUser
@@ -51,35 +26,55 @@ namespace TechSupport.Services
             }
         }
 
-        
+        public bool IsAuthenticated => CurrentUser != null;
+
+        // Единственное определение IsAdmin
+        public bool IsAdmin => CurrentUser?.Role == "Admin";
+
+        public bool IsTechSupport => IsAuthenticated && CurrentUser.Role == "TechSupport";
+
+        public bool Login(string username, string password)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                return false;
+
+            CurrentUser = user;
+            AuthenticationChanged?.Invoke();
+            return true;
+        }
 
         public void Logout()
         {
+            Debug.WriteLine("Выполняется выход из системы");
+
+            // 1. Очищаем текущего пользователя (вызовет AuthenticationChanged)
             CurrentUser = null;
+
+            // 2. Дополнительные действия при выходе
+            ClearSessionData();
         }
 
-        private string HashPassword(string password)
+        private void ClearSessionData()
         {
-            using var sha = SHA256.Create();
-            byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(bytes);
+            // Очистка cookies/токенов, если используются
+            Debug.WriteLine("Данные сессии очищены");
         }
 
-        private bool VerifyPassword(string password, string storedHash)
+        public void Register(string username, string password, string name, string email)
         {
-            // Реализация проверки хэша (пример)
-            using var sha256 = SHA256.Create();
-            byte[] inputHash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            string inputHashString = BitConverter.ToString(inputHash).Replace("-", "");
-            return inputHashString.Equals(storedHash, StringComparison.OrdinalIgnoreCase);
-        }
+            if (_context.Users.Any(u => u.Username == username))
+                throw new Exception("Пользователь с таким логином уже существует");
 
-        public void Register(string username, string password)
-        {
             var user = new User
             {
                 Username = username,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password) // Хэш включает соль автоматически
+                Name = name,
+                Email = email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                Role = "User",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Users.Add(user);
@@ -87,16 +82,5 @@ namespace TechSupport.Services
         }
 
 
-
-        public bool Authenticate(string username, string password)
-        {
-            // Заглушка для примера
-            return !string.IsNullOrEmpty(username) && password == "123";
-        }
-
-        internal bool Register(string username)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

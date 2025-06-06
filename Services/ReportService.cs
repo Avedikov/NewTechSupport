@@ -10,54 +10,43 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using TechSupport.Models;
+using Document = iTextSharp.text.Document;
 
 namespace TechSupport.Services
 {
     public static class ReportService
     {
-        public static void GenerateTicketReport(List<Ticket> tickets, string filePath)
+        public static void GenerateKnowledgeBaseReport(List<KnowledgeArticle> articles, string filePath)
         {
             using var fs = new FileStream(filePath, FileMode.Create);
-            var document = new iTextSharp.text.Document(PageSize.A4.Rotate());
+            var document = new Document(PageSize.A4);
             var writer = PdfWriter.GetInstance(document, fs);
 
             document.Open();
 
             // Заголовок
-            var title = new iTextSharp.text.Paragraph("Отчет по заявкам",
-                FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16));
-            title.Alignment = Element.ALIGN_CENTER;
-            document.Add(title);
+            document.Add(new iTextSharp.text.Paragraph("База знаний - Отчет",
+                FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16)));
 
-            // Дата генерации
-            document.Add(new iTextSharp.text.Paragraph($"Дата генерации: {DateTime.Now:dd.MM.yyyy HH:mm}")
-            {
-                Alignment = Element.ALIGN_CENTER,
-                SpacingAfter = 10f
-            });
-
-            // Таблица
-            var table = new PdfPTable(6);
+            // Таблица с данными
+            var table = new PdfPTable(5);
             table.WidthPercentage = 100;
-            table.SetWidths(new float[] { 0.5f, 2f, 1f, 1f, 1.5f, 1f });
 
             // Заголовки столбцов
-            AddHeaderCell(table, "ID");
-            AddHeaderCell(table, "Тема");
-            AddHeaderCell(table, "Статус");
-            AddHeaderCell(table, "Категория");
-            AddHeaderCell(table, "Исполнитель");
-            AddHeaderCell(table, "Дата создания");
+            table.AddCell("ID");
+            table.AddCell("Название");
+            table.AddCell("Статус");
+            table.AddCell("Ответственный");
+            table.AddCell("Дата обновления");
 
             // Данные
-            foreach (var ticket in tickets)
+            foreach (var article in articles)
             {
-                AddCell(table, ticket.Id.ToString());
-                AddCell(table, ticket.Subject);
-                AddCell(table, ticket.Status);
-                AddCell(table, ticket.Category ?? "-");
-                AddCell(table, ticket.AssignedUser?.Name ?? "Не назначен");
-                AddCell(table, ticket.CreateDate.ToString("dd.MM.yyyy"));
+                table.AddCell(article.Id.ToString());
+                table.AddCell(article.Title);
+                table.AddCell(article.Status);
+                table.AddCell(article.AssignedUser?.Name ?? "Не назначен");
+                table.AddCell(article.LastUpdated.ToString("dd.MM.yyyy"));
             }
 
             document.Add(table);

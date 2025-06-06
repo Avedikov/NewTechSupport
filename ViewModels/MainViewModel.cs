@@ -5,6 +5,8 @@ using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using TechSupport.Context;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
+using TechSupport.Models;
 
 namespace TechSupport.ViewModels
 {
@@ -13,6 +15,9 @@ namespace TechSupport.ViewModels
         private readonly AuthService _authService;
         private object _currentPage;
         private AppDbContext _context;
+        private User _currentUser;
+
+        public event Action AuthenticationChanged;
 
         public AuthService AuthService { get; set; }
 
@@ -24,13 +29,14 @@ namespace TechSupport.ViewModels
 
         // Теперь свойства получают данные из экземпляра AuthService
         public bool IsAdmin => _authService.CurrentUser?.IsAdmin ?? true;
-        public bool IsTechSupport => _authService.CurrentUser?.IsTechSupport ?? true;
+        public bool IsTechSupport => _authService.CurrentUser?.IsTechSupport ?? false;
 
         public ICommand NavigateToNewTicketCommand { get; }
         public ICommand NavigateToTicketsCommand { get; }
         public ICommand NavigateToKnowledgeBaseCommand { get; }
         public ICommand NavigateToAdminCommand { get; }
         public ICommand LogoutCommand { get; private set; }
+        public object CurrentUser { get; private set; }
 
 
         // Внедряем AuthService через конструктор
@@ -46,6 +52,32 @@ namespace TechSupport.ViewModels
             NavigateToKnowledgeBaseCommand = new RelayCommand(NavigateToKnowledgeBase);
             NavigateToAdminCommand = new RelayCommand(NavigateToAdmin, () => IsAdmin);
             LogoutCommand = new RelayCommand(Logout);
+            LogoutCommand = new RelayCommand(ExecuteLogout);
+
+        }
+        private void ExecuteLogout()
+        {
+            Debug.WriteLine("Команда выхода выполнена");
+            _authService.Logout();
+
+            // Дополнительные действия после выхода
+            NavigateToLogin();
+        }
+
+        private void NavigateToLogin()
+        {
+            // Переход на страницу входа
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var loginWindow = new Views.LoginWindow();
+                loginWindow.Show();
+
+                // Закрываем текущее окно
+                foreach (Window window in Application.Current.Windows)
+                {
+                    if (window is MainWindow) window.Close();
+                }
+            });
         }
 
         private void OnAuthenticationChanged()
@@ -60,6 +92,7 @@ namespace TechSupport.ViewModels
 
         public MainViewModel(AuthService authService, object value1, object value2) : this(authService)
         {
+            
         }
 
         public MainViewModel(AuthService authService, TicketService ticketService) : this(authService)
@@ -88,21 +121,22 @@ namespace TechSupport.ViewModels
 
         private void Logout()
         {
-            Console.WriteLine("Logout called");
-            _authService.Logout();
-            OnPropertyChanged(nameof(IsTechSupport));
-            OnPropertyChanged(nameof(IsAdmin));
+            Debug.WriteLine("[1] Начало выхода");
+            CurrentUser = null;
+            Debug.WriteLine("[2] Пользователь очищен");
+            AuthenticationChanged?.Invoke();
+            Debug.WriteLine("[3] Событие вызвано");
         }
 
         
         private void NavigateToAdmin()
         {
 
-            //if (!_authService.IsAdmin)
-            //{
-            //    MessageBox.Show("Доступ запрещён!");
-            //    return;
-            //}
+            if (!_authService.IsAdmin)
+            {
+                MessageBox.Show("Доступ запрещён!");
+                return;
+            }
 
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.MainFrame.Navigate(new AdminPage());

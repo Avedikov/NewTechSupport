@@ -39,9 +39,17 @@ namespace TechSupport.Models
         public string? Email { get; set; }
 
         // Внешний ключ и навигационное свойство для исполнителя
+        // Автор заявки
+        public int? AuthorId { get; set; }
+        [ForeignKey("AuthorId")]
+        public virtual User Author { get; set; }
+
         public int? AssignedUserId { get; set; }
         [ForeignKey("AssignedUserId")]
-        public virtual User? AssignedUser { get; set; }
+        public virtual User AssignedUser { get; set; }
+
+       
+
 
         // История изменений
         public virtual ICollection<TicketHistory> History { get; set; }
@@ -49,6 +57,15 @@ namespace TechSupport.Models
         public Ticket()
         {
             History = new HashSet<TicketHistory>();
+        }
+
+        public bool CanUserEdit(User user)
+        {
+            // Админы могут редактировать любые заявки
+            if (user.IsAdmin) return true;
+
+            // Техподдержка может редактировать только свои заявки
+            return AssignedUserId == user.Id;
         }
     }
 }

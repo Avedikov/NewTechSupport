@@ -1,10 +1,10 @@
 ﻿<Page x:Class="TechSupport.Views.AdminPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="clr-namespace:TechSupport.ViewModels"
-      Title="Администрирование" Width="700" Height="200">
-    <Page.DataContext>
+      Title="Администрирование" Width="750" Height="200">
+    <!--<Page.DataContext>
         <vm:AdminViewModel/>
-    </Page.DataContext>
+    </Page.DataContext>-->
     <Grid>
         <TabControl>
             <TabItem Header="Пользователи">
@@ -18,24 +18,42 @@
                     <!-- Панель инструментов -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
                         <Button Content="Добавить" Command="{Binding AddUserCommand}" 
-                                Margin="0,0,10,0" Padding="10,5"/>
+                            Margin="0,0,10,0" Padding="10,5"/>
                         <Button Content="Сохранить" Command="{Binding SaveUsersCommand}" 
-                                Margin="0,0,10,0" Padding="10,5"/>
+                            Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сделать админом" Command="{Binding MakeAdminCommand}"
+                            Margin="0,0,10,0" Padding="10,5"/>
                         <Button Content="Экспорт в PDF" Command="{Binding ExportUsersCommand}" 
-                                Padding="10,5"/>
+                            Padding="10,5"/>
                     </StackPanel>
 
                     <!-- Список пользователей -->
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Users}" 
-                              AutoGenerateColumns="False" CanUserAddRows="False">
+                          SelectedItem="{Binding SelectedUser}"
+                          AutoGenerateColumns="False" 
+                          CanUserAddRows="False"
+                          Margin="0,0,0,10">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="Auto"/>
                             <DataGridTextColumn Header="Логин" Binding="{Binding Username}" Width="*"/>
                             <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="*"/>
-                            <DataGridComboBoxColumn Header="Роль" 
-                                                  SelectedItemBinding="{Binding Role}"
-                                                  ItemsSource="{Binding Roles}" Width="*"/>
-                            <DataGridTextColumn Header="Должность" Binding="{Binding Position}" Width="*"/>
+
+                            <!-- Новые колонки -->
+                            <DataGridTextColumn Header="Отдел" Binding="{Binding Department, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                            <DataGridTextColumn Header="Должность" Binding="{Binding Position, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+
+                            <DataGridTemplateColumn Header="Роль" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.Roles, 
+                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                              SelectedItem="{Binding Role, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="."/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
                             <DataGridCheckBoxColumn Header="Активен" Binding="{Binding IsActive}" Width="Auto"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -56,11 +74,11 @@
                         <GroupBox Header="Фильтры" Margin="10">
                             <StackPanel Orientation="Horizontal">
                                 <DatePicker x:Name="statsFromDate" Margin="5" Width="120"
-                                            SelectedDate="{Binding StatsDateFrom}"/>
+                                        SelectedDate="{Binding StatsDateFrom}"/>
                                 <DatePicker x:Name="statsToDate" Margin="5" Width="120"
-                                            SelectedDate="{Binding StatsDateTo}"/>
+                                        SelectedDate="{Binding StatsDateTo}"/>
                                 <Button Content="Обновить" Command="{Binding RefreshStatsCommand}"
-                                        Margin="5" Padding="10,5"/>
+                                    Margin="5" Padding="10,5"/>
                             </StackPanel>
                         </GroupBox>
 
@@ -72,12 +90,10 @@
                             </Grid.ColumnDefinitions>
 
                             <GroupBox Header="По статусам" Grid.Column="0" Margin="5">
-                                <!-- Здесь будет диаграмма -->
                                 <TextBlock Text="Диаграмма статусов" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </GroupBox>
 
                             <GroupBox Header="По исполнителям" Grid.Column="1" Margin="5">
-                                <!-- Здесь будет диаграмма -->
                                 <TextBlock Text="Диаграмма исполнителей" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </GroupBox>
                         </Grid>

@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 C:\Users\Pavel\source\repos\TechSupport\TechSupport\App.xaml
-71385109074
+8-1744757583
 
-59-956297829
+82-716458141
 232-643539653
-Views\AdminPage.xaml;Views\KnowledgeBasePage.xaml;Views\LoginWindow.xaml;Views\MainWindow.xaml;Views\NewTicketPage.xaml;Views\RegisterWindow.xaml;Views\TicketsPage.xaml;
+Views\AdminPage.xaml;Views\EditTicketWindow.xaml;Views\KnowledgeBasePage.xaml;Views\LoginWindow.xaml;Views\MainWindow.xaml;Views\NewTicketPage.xaml;Views\RegisterWindow.xaml;Views\TicketsPage.xaml;
 
 False
 

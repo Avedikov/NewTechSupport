@@ -10,8 +10,20 @@ namespace TechSupport.Models
     {
         public string? Status { get; set; }
         public int? AssignedUserId { get; set; }
+        public string? SearchText { get; set; } // Для поиска по фамилии/email/теме
+        public string ClientNameSearch { get; set; }
+        public string SubjectSearch { get; set; }
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
-        public string? SearchText { get; set; } // Для поиска по фамилии/email/теме
+        public DateFilterType DateFilterType { get; set; } = DateFilterType.CreateDate;
+
+        
     }
+
+    public enum DateFilterType
+    {
+        CreateDate,
+        LastUpdateDate
+    }
+
 }

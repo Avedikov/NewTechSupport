@@ -1,21 +1,10 @@
 ﻿using TechSupport.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Security.Cryptography;
-using System.Data.SqlTypes;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using BCrypt.Net;
 
 namespace TechSupport.Context
 {
-   public class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext()
         {
@@ -59,6 +48,32 @@ namespace TechSupport.Context
                     .WithOne(h => h.Ticket)
                     .HasForeignKey(h => h.TicketId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<Ticket>()
+                    .HasOne(t => t.Author)
+                    .WithMany()
+                    .HasForeignKey(t => t.AuthorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<Ticket>()
+                    .HasOne(t => t.AssignedUser)
+                    .WithMany()
+                    .HasForeignKey(t => t.AssignedUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+            modelBuilder.Entity<Ticket>(entity =>
+            {
+                entity.HasOne(t => t.Author)
+                    .WithMany()
+                    .HasForeignKey(t => t.AuthorId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(t => t.AssignedUser)
+                    .WithMany()
+                    .HasForeignKey(t => t.AssignedUserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                
             });
 
             // Конфигурация для User
@@ -71,10 +86,33 @@ namespace TechSupport.Context
                     .WithOne(h => h.ChangedByUser)
                     .HasForeignKey(h => h.ChangedByUserId)
                     .OnDelete(DeleteBehavior.SetNull);
+                
 
             });
+            modelBuilder.Entity<KnowledgeArticle>(entity =>
+            {
+                // Настройка связи с назначенным пользователем
+                entity.HasOne(a => a.AssignedUser)
+                    .WithMany()
+                    .HasForeignKey(a => a.AssignedUserId)
+                    .OnDelete(DeleteBehavior.NoAction); // Явно указываем NO ACTION
 
-            
+                // Настройка связи с автором
+                entity.HasOne(a => a.Author)
+                    .WithMany()
+                    .HasForeignKey(a => a.AuthorId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                // Настройка связи с исходной заявкой
+                entity.HasOne(a => a.SourceTicket)
+                    .WithMany()
+                    .HasForeignKey(a => a.SourceTicketId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+
+
+
             // Начальные данные
             modelBuilder.Entity<User>().HasData(
                 new User

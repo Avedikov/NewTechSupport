@@ -33,7 +33,7 @@
                         Style="{StaticResource NavButtonStyle}"
                         Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                <Button Content="Выйти" Command="{Binding LogoutCommand}"
+                <Button Content="Выйти" Command="{Binding LogoutCommand}" IsEnabled="{Binding IsAuthenticated}"
                         Style="{StaticResource NavButtonStyle}" Margin="0,20,0,0"/>
             </StackPanel>
         </Border>

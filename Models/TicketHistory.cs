@@ -21,7 +21,7 @@ namespace TechSupport.Models
         public virtual Ticket Ticket { get; set; }
         
 
-    [Required]
+        [Required]
         [StringLength(50)]
         public string Action { get; set; } // "StatusChanged", "Assigned", "Created"
 
@@ -38,7 +38,6 @@ namespace TechSupport.Models
 
         [Required]
         public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
-
-        
+        public string Description { get; internal set; }
     }
 }

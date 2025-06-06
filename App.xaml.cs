@@ -49,6 +49,7 @@ namespace TechSupport
 
             services.AddTransient<KnowledgeBaseViewModel>();
 
+            services.AddSingleton<IPdfService, PdfService>();
             
 
             services.AddTransient<TicketsViewModel>();
@@ -81,6 +82,7 @@ namespace TechSupport
             services.AddSingleton<Services.AuthService>();
             services.AddSingleton<ViewModels.MainViewModel>();
             services.AddTransient<Views.LoginWindow>();
+            services.AddTransient<Views.EditTicketWindow>();
 
             // Регистрация окон
             services.AddTransient<Views.MainWindow>();
@@ -101,8 +103,17 @@ namespace TechSupport
             services.AddTransient<Views.LoginWindow>();
             services.AddSingleton<BoolToVisibilityConverter>();
             services.AddTransient<ViewModels.MainViewModel>();
-            services.AddSingleton<AuthService>();
+            services.AddSingleton<Services.AuthService>();
+            services.AddDbContext<AppDbContext>();
+            services.AddSingleton<Services.AuthService>();
+            services.AddTransient<ViewModels.AdminViewModel>();
+            services.AddTransient<Views.AdminPage>();
+            services.AddTransient<Views.KnowledgeBasePage>();
+            services.AddTransient<ViewModels.NewTicketViewModel>();
+            services.AddSingleton<Services.TicketService>();
+            services.AddSingleton<Services.AuthService>();
             
+
 
 
         }
